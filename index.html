@@ -1,5 +1,462 @@
-<html>
+<!DOCTYPE html>
+<html lang=en>
+<head>
+<meta charset=utf-8>
+<title>Nighttime Space</title>
+<script src="https://cdn.rawgit.com/mrdoob/three.js/r76/build/three.min.js"></script>
+<script src="http://sdk.altvr.com/libs/altspace.js/0.26.3/altspace.min.js"></script>
+
+<script src="https://cdn.rawgit.com/Ooblik/AltspaceVR-Native-Components-JS/master/js/JSNativeComponents.js"></script>
+
+<script type="text/javascript" src="http://norybiak.com/js/UltimateLoader.min.js"></script>
+<script type="text/javascript" src="http://norybiak.com/tools/DevNewRefactored/AudioSpace.js"></script>
+</head>
 <body>
-This is a placeholder
+    <script>
+        if (!window.altspace || !window.altspace.inClient) document.write('<h3>Bruh, This is an AltspaceVR app. Why you trying to open it in a browser? Get altspace here: <a href="http://altvr.com"> AltspaceVR </a></h3>');
+
+		var NighttimeSpace = (function() {
+			var scene = new THREE.Scene();
+			var renderer = altspace.getThreeJSRenderer();
+
+			var ppm = 246.913574;
+			var loadedObjects = [];
+			var modelBaseUrl = 'assets/';
+			var masterScale = 1;
+
+			var userHead;
+
+			var skybox1;
+
+			var animationInc = 0;
+			var fireCenter = new THREE.Vector3(-2100, -620, -2300);
+			var fireworksCenter = new THREE.Vector3(0, 5000, 0);
+			var ceilingBlockCenter = new THREE.Vector3(1010, 2185, 1015);
+			var ceilingBlockScale = new THREE.Vector3(3650,50,3600);
+			var tableBlockCenter = new THREE.Vector3(-833, -543.5, 4444.5);
+			var tableBlockScale = new THREE.Vector3(175,12,420);
+			var moonPosition = new THREE.Vector3(-80000, 80000, -80000);
+			var moonScale = 16000;
+
+			var ceilingBox;
+			var ceilingBox2;
+			var moon;
+			
+			var discoball;
+			var discoballMat;
+
+			var snowflakesEnabled = false;
+			if( ! /[&?]noSnow/.test(window.location.search) ){
+				snowflakesEnabled = true;
+			}
+			var numSnowflakes = 500;
+			var snowflakeSize = 10;
+			var snowflakes = [];
+			var snowDriftDistanceX = 0.2;
+			var snowDriftDistanceZ = 0.2;
+			var snowDriftSpeed = 0.02;
+			var snowDriftSeparation = 10;
+			var snowGravity = 0.6;
+			var snowflakeSpinSpeed = 0.05;
+			var flakeBoxWidth = 600;
+			var flakeBoxHeight = 500;
+			var flakeBoxDepth = 600;
+
+            var config = { modelScaleFactor: 1 };
+			var  models =
+
+			[
+				{ name: 'cabin', type: '.obj', position: { x: 0, y: 0, z: 0}, offset: { x: 0, y: 0, z: 0 } },
+				{ name: 'tikitorches2', type: '.obj', position: { x: 0, y: 0, z: 0 }, offset: { x: 0, y: 0, z: 0 } },
+				{ name: 'firepitcenter1', type: '.obj', position: { x: 0, y: 0, z: 0 }, offset: { x: 0, y: 0, z: 0 } },
+				{ name: 'firepitcenterblocks1', type: '.obj', position: { x: 0, y: 0, z: 0 }, offset: { x: 0, y: 0, z: 0 } },
+				{ name: 'tenttop', type: '.obj', position: { x: -1.25, y: 0, z: 2.75 }, offset: { x: 0, y: 0, z: 0 } },
+				{ name: 'tentframe', type: '.obj', position: { x: -1.25, y: 0, z: 2.75}, offset: { x: 0, y: 0, z: 0 } },
+				{ name: 'banner', type: '.obj', position: { x: 0, y: 0, z: 0}, offset: { x: 0, y: 0, z: 0 } },
+				{ name: 'snow3', type: '.obj', position: { x: 0, y: 0, z: 0}, offset: { x: 0, y: 0, z: 0 } },
+				{ name: 'discoballnighttimespace', type: '.obj', position: { x: 0, y: 0, z: 0}, offset: { x: 0, y: 0, z: 0 } }
+
+			];
+
+			function RandInt(min, max) {
+				return Math.floor(Math.random() * (max - min)) + min;
+			}
+
+			function RandFloat(min, max) {
+				return (Math.random() * (max - min)) + min;
+			}
+
+			function createSkybox(url, update, _opacity) {
+				var _opacity = _opacity || false;
+				var sphereGeo = new THREE.SphereGeometry(400, 20, 20, Math.PI + 0.3, -2*Math.PI);
+				var texture = THREE.ImageUtils.loadTexture( url );
+
+				texture.needsUpdate = update;
+				texture.minFilter = THREE.LinearFilter;
+				texture.magFilter = THREE.LinearFilter;
+				texture.format = THREE.RGBFormat;
+
+				var config;
+				if (_opacity)
+				{
+					config = { color: 0xffffff, map: texture, opacity: _opacity, transparent : true, side: THREE.DoubleSide };
+				}
+				else
+				{
+					config = { color: 0xffffff, map: texture, side: THREE.DoubleSide };
+				}
+
+				var sphereMaterial = new THREE.MeshBasicMaterial( config );
+
+				return new THREE.Mesh(sphereGeo, sphereMaterial);
+			}
+
+			function createSnowFlake() {
+			var tex = new THREE.ImageUtils.loadTexture("assets/snowflakes.png");
+			tex.offset = new THREE.Vector2( (RandInt(0, 3)/4), (RandInt(0, 3)/4)); // I am applied to each new object instance constructed by this function
+			tex.repeat = new THREE.Vector2( .25, .25);
+			var snowflake = new THREE.Mesh(new THREE.PlaneGeometry(snowflakeSize, snowflakeSize, 1, 1), new THREE.MeshBasicMaterial({ map: tex, transparent: true, side: THREE.DoubleSide}));
+			scene.add(snowflake);
+			snowflake.userData.altspace = {collider: {enabled: false}};
+			snowflake.position.set((((userHead.position.x-scene.position.x) * ppm) + RandFloat((flakeBoxWidth*-1), flakeBoxWidth)), (((userHead.position.y-scene.position.y) * ppm) + RandFloat((flakeBoxHeight*-1), flakeBoxHeight)), (((userHead.position.z-scene.position.z) * ppm) + RandFloat((flakeBoxDepth*-1), flakeBoxDepth)));
+			((userHead.position.y-scene.position.y) * ppm)
+			snowflake.lookAt((userHead.position.y-scene.position.y) * ppm)
+			return snowflake;
+			}
+
+			function onLoaded() {
+				var modelRoot = new THREE.Group();
+				modelRoot.scale.set(ppm, ppm, ppm);
+				scene.add(modelRoot);
+                for (var i = 0; i < models.length; i++)
+				{
+                    var obj = models[i].object;
+                    var name = models[i].name;
+                    var spawnPosition = new THREE.Vector3();
+
+                    spawnPosition.copy(models[i].position);
+                    spawnPosition.multiplyScalar(masterScale);
+                    obj.position.copy(spawnPosition);//initial position
+                    obj.scale.set(masterScale, masterScale, masterScale);
+
+					if (name === 'tikitorches2') {
+						
+						obj.traverse( function(child) 
+						{
+							if (child instanceof THREE.Mesh) 
+							{ 
+								child.userData.altspace = {collider: {enabled: false}};
+							}
+						})
+						var cabinCollider = new NativeComponent('n-mesh-collider', {convex: false}, obj);
+					}
+					if (name === 'firepitcenter1') {
+						
+						obj.traverse( function(child) 
+						{
+							if (child instanceof THREE.Mesh) 
+							{ 
+								child.userData.altspace = {collider: {enabled: false}};
+							}
+						})
+						var cabinCollider = new NativeComponent('n-mesh-collider', {convex: false}, obj);
+					}
+					if (name === 'firepitcenterblocks1') {
+						
+						obj.traverse( function(child) 
+						{
+							if (child instanceof THREE.Mesh) 
+							{ 
+								child.userData.altspace = {collider: {enabled: false}};
+							}
+						})
+						var cabinCollider = new NativeComponent('n-mesh-collider', {convex: false}, obj);
+					}
+					
+					if (name === 'cabin') {
+						
+						obj.traverse( function(child) 
+						{
+							if (child instanceof THREE.Mesh) 
+							{ 
+								child.userData.altspace = {collider: {enabled: false}};
+							}
+						})
+						var cabinCollider = new NativeComponent('n-mesh-collider', {convex: false}, obj);
+						obj.position.y = .1;
+					}
+
+					if (name === 'tenttop') {
+						obj.traverse( function(child) 
+						{
+							if (child instanceof THREE.Mesh) 
+							{ 
+								child.userData.altspace = {collider: {enabled: false}};
+							}
+						})
+						var tenttopCollider = new NativeComponent('n-mesh-collider', {convex: false}, obj);
+						//console.log (obj);
+					}
+
+					if (name === 'tentframe') {
+						obj.traverse( function(child) 
+						{
+							if (child instanceof THREE.Mesh) 
+							{ 
+								child.userData.altspace = {collider: {enabled: false}};
+							}
+						})
+						var tentframeCollider = new NativeComponent('n-mesh-collider', {convex: false}, obj)
+						//console.log (obj);
+					}
+
+					if (name === 'waveGrid') {
+						obj.scale.set(masterScale*2,masterScale,masterScale*2);
+						obj.position.y = -10000;
+						obj.rotation.y = THREE.Math.degToRad(0);
+						obj.children[0].userData.altspace = {collider: {enabled: false}};
+						obj.children[1].userData.altspace = {collider: {enabled: false}};
+						//console.log (obj);
+					}
+
+					if (name === 'snow3') {
+						obj.traverse( function(child) 
+						{
+							if (child instanceof THREE.Mesh) 
+							{ 
+								child.userData.altspace = {collider: {enabled: false}};
+							}
+						})
+						//console.log (obj);
+					}
+					
+					if (name === 'discoballnighttimespace') {
+						obj.children[1].userData.altspace = {collider: {enabled: false}};
+						obj.position.set(5, 14, 5);
+						discoball = obj;
+						console.log(obj);
+						var meshColliderDisco = new NativeComponent('n-mesh-collider', {convex: false}, obj);
+						
+						discoballMat = discoball.children[1].material;
+						discoballMat.map.wrapT = THREE.RepeatWrapping;
+						discoballMat.map.wrapS = THREE.RepeatWrapping;
+					}
+
+                    modelRoot.add(obj);
+                }
+            }
+
+			function start() {
+			    scene.scale.set(1/ppm, 1/ppm, 1/ppm);
+			    //scene.position.set(-2.37, 2.68, -5.84);
+				var promises =
+				[
+					altspace.getEnclosure(),
+					altspace.getThreeJSTrackingSkeleton(),
+
+				];
+
+				//Stuff to run AFTER promises have been loaded
+				Promise.all(promises).then(function (array)
+				{
+					//Store enclosure and skeleton promises to variables
+					enclosure = array.shift();
+					var skeleton = array.shift();
+
+					//Add skeleton to scene and store Head joint in variable
+					scene.add(skeleton);
+					userHead = skeleton.getJoint('Head');
+
+					
+					ceilingBox = new THREE.Mesh(new THREE.BoxGeometry(ceilingBlockScale.x, 100, ceilingBlockScale.z), new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0 }));
+					ceilingBox.position.x = ceilingBlockCenter.x;
+					ceilingBox.position.y = ceilingBlockCenter.y;
+					ceilingBox.position.z = ceilingBlockCenter.z;
+					scene.add(ceilingBox);
+
+					var ceilingBlock = new NativeComponent('n-box-collider', null, ceilingBox).addTo(scene);
+
+					//Create the moon visuals
+					var moonTexture = THREE.ImageUtils.loadTexture( "assets/moon.jpg" );
+					moon = new THREE.Mesh(new THREE.SphereGeometry(8000, 80, 80), new THREE.MeshBasicMaterial({ color: 0xffffff, map: moonTexture }));
+					moon.position.set(moonPosition.x, moonPosition.y, moonPosition.z);
+					moon.userData.altspace = {collider: {enabled: false}};
+					scene.add(moon);
+
+					var moonColliderMesh = new THREE.Mesh(new THREE.SphereGeometry(8000, 80, 80), new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0}));
+					moonColliderMesh.position.set(moonPosition.x, moonPosition.y, moonPosition.z);
+					var moonCollider = new NativeComponent('n-sphere-collider', {radius: 8000}, moonColliderMesh).addTo(scene);
+
+					//Particle Effects
+					var fireworksContainer = new THREE.Group;
+					var fireworks = new NativeComponent('n-object', {res: 'effects/fireworks'}).addTo(fireworksContainer);
+					fireworksContainer.position.x = fireworksCenter.x;
+					fireworksContainer.position.y = fireworksCenter.y;
+					fireworksContainer.position.z = fireworksCenter.z;
+					scene.add(fireworksContainer);
+					
+					var fireContainer = new THREE.Group;
+					var fire = new NativeComponent('n-object', {res: 'effects/fire'}).addTo(fireContainer);
+					var fireSound = new NativeComponent('n-sound', {src: 'assets/fire.wav', volume: 0.5, autoplay: true, loop: true}).addTo(fireContainer);
+					fireContainer.position.x = fireCenter.x;
+					fireContainer.position.y = fireCenter.y;
+					fireContainer.position.z = fireCenter.z;
+					scene.add(fireContainer);
+					
+			//ENVIRONMENT CONTROL PANELw
+					var snowButtonTex = THREE.ImageUtils.loadTexture( "assets/snowtile.jpg" );
+					var snowButton = new THREE.Mesh(new THREE.SphereGeometry(20, 80, 80, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0xffffff, map: snowButtonTex }));
+					scene.add(snowButton);
+					snowButton.position.set(-530,10,2770);
+					snowButton.addEventListener('cursordown', function(event) {
+						snowflakesEnabled = !snowflakesEnabled;
+						console.log(snowflakesEnabled);
+					});
+
+					//var snowUpbuttonTex = THREE.ImageUtils.loadTexture( "assets/snowtile.jpg" );
+					var snowUpButton = new THREE.Mesh(new THREE.SphereGeometry(10, 80, 80, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0x00ff00 }));
+					scene.add(snowUpButton);
+					snowUpButton.position.set(-570,20,2770);
+					snowUpButton.addEventListener('cursordown', function(event) {
+						if (numSnowflakes < 2000) {numSnowflakes += 50;}
+						console.log("adding 100 snowflakes");
+					});
+
+					//var snowDownButtonTex = THREE.ImageUtils.loadTexture( "assets/snowtile.jpg" );
+					var snowDownButton = new THREE.Mesh(new THREE.SphereGeometry(10, 80, 80, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
+					scene.add(snowDownButton);
+					snowDownButton.position.set(-570,0,2770);
+					snowDownButton.addEventListener('cursordown', function(event) {
+						if (numSnowflakes >= 100) {numSnowflakes -= 50;}
+						console.log("subtracting 100 snowflakes");
+					});
+
+					var snowControlPanelTex = THREE.ImageUtils.loadTexture( "assets/snowcontrolpanel.png" );
+					var snowControlPanel = new THREE.Mesh(new THREE.PlaneGeometry(150, 150, 1), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, map: snowControlPanelTex }));
+					scene.add(snowControlPanel);
+					snowControlPanel.position.set(-550,10,2765);
+					snowControlPanel.rotation.y = THREE.Math.degToRad(180);
+					
+					masterScale = enclosure.pixelsPerMeter * config.modelScaleFactor;
+
+					// Build ultimateloader array
+					var objectUrls = new Array(models.length);
+					for (var i = 0; i < models.length; i++)
+					{
+						objectUrls[i] = modelBaseUrl + models[i].name + models[i].type;
+					}
+
+					// Use UltimateLoader to load my models
+					UltimateLoader.multiload(objectUrls, function(objects)
+					{
+						for (var i = 0; i < objects.length; i++)
+						{
+							models[i].object = objects[i];
+						}
+
+						onLoaded();
+					});
+
+					if (snowflakesEnabled == true) {
+						// Create all the snowflakes
+						for(var i = 0; i < numSnowflakes; ++i) {
+						snowflakes.push(createSnowFlake());
+						}
+						console.log(snowflakes.length + "snowflakes exist");
+					}
+
+					// Create Milkyway SKybox (url, update, opacity)
+					skybox1 = createSkybox('assets/milkyway.jpg', true)
+					skybox1.position.set(0,0,0);
+					skybox1.scale.z = -1;
+					skybox1.scale.set(600, 600, 600);
+					scene.add(skybox1);
+
+					// Create Skybox Haziness
+					var skybox2 = createSkybox('assets/panohaze.png', false, 0.8);
+					skybox2.position.set(0,0,0);
+					skybox2.scale.z = -1;
+					skybox2.scale.set(500, 500, 500);
+					skybox1.add(skybox2);
+
+					scene.position.set(-2.37, 2.68, -5.84);
+
+
+					// Run animation loop
+					animate();
+
+				}).catch(function (err)
+
+			{
+					console.log('Stuff is Broke', err);
+				});
+			}
+
+			function animate() {
+				animationInc++;
+				requestAnimationFrame(animate);
+				renderer.render(scene);
+				skybox1.rotation.x += -0.0000195;
+				skybox1.rotation.y += -0.0000165;
+				skybox1.rotation.z += -0.0000155;
+				skybox1.position.x = ((userHead.position.x-scene.position.x)* ppm);
+				skybox1.position.y = ((userHead.position.y-scene.position.y)* ppm);
+				skybox1.position.z = ((userHead.position.z-scene.position.z)* ppm);
+				
+				moon.rotation.x += -0.0000314;
+				moon.rotation.y += -0.000032;
+				moon.rotation.z += -0.0000155;
+				
+				discoball.rotation.y += 0.01;
+				discoballMat.map.offset.x = ((THREE.Math.radToDeg(discoball.rotation.y)-180)/360);
+				
+
+				//create and animate snowflakes
+				if (snowflakesEnabled == true) {
+					if (snowflakes.length < numSnowflakes){
+						for(var i = 0; i < numSnowflakes; ++i) {
+							snowflakes.push(createSnowFlake());
+						}
+					} else {
+						for(var i = 0; i < numSnowflakes; ++i) {
+							snowflakes[i].position.y = snowflakes[i].position.y - snowGravity;
+							snowflakes[i].position.x = (snowflakes[i].position.x) + (Math.sin(((animationInc*snowDriftSpeed) + (i*snowDriftSeparation)))*snowDriftDistanceX);
+							snowflakes[i].position.z = (snowflakes[i].position.z) + (Math.cos(((animationInc*snowDriftSpeed) + (i*snowDriftSeparation)))*snowDriftDistanceZ);
+
+							if ((snowflakes[i].position.y < (((userHead.position.y-scene.position.y) * ppm) - flakeBoxHeight)) ||
+							(snowflakes[i].position.x < (((userHead.position.x-scene.position.x) * ppm) - flakeBoxWidth)) ||
+							(snowflakes[i].position.x > (((userHead.position.x-scene.position.x) * ppm) + flakeBoxWidth)) ||
+							(snowflakes[i].position.z < (((userHead.position.z-scene.position.z) * ppm) - flakeBoxDepth)) ||
+							(snowflakes[i].position.z > (((userHead.position.z-scene.position.z) * ppm) + flakeBoxDepth))) {
+							snowflakes[i].position.set((((userHead.position.x-scene.position.x) * ppm) + RandFloat((flakeBoxWidth*-1), flakeBoxWidth)), (((userHead.position.y-scene.position.y) * ppm) + RandFloat((flakeBoxHeight*-1), flakeBoxHeight)), (((userHead.position.z-scene.position.z) * ppm) + RandFloat((flakeBoxDepth*-1), flakeBoxDepth)));
+							}
+
+							var flakeAim = new THREE.Vector3(((userHead.position.x-scene.position.x) * ppm), ((userHead.position.y-scene.position.y) * ppm), ((userHead.position.z-scene.position.z) * ppm));
+							snowflakes[i].lookAt(flakeAim);
+							snowflakes[i].rotation.z = (animationInc * snowflakeSpinSpeed) * ((i - (numSnowflakes/2))/(numSnowflakes/2));
+						}
+					}
+				} else {
+					if (snowflakes.length > 0) {
+						for(var i = 0; i < snowflakes.length; i++) {
+							scene.remove(snowflakes[i]);
+						}
+						snowflakes = [];
+					}
+				}
+
+			}
+
+			return { start: start };
+		}());
+
+		altspace.getEnclosure().then(function (enclosure) {
+			enclosure.requestFullspace().then(function () {
+			    NighttimeSpace.start();
+			});
+		})
+
+    </script>
+	<a id="migueldoor" href="altspace://account.altvr.com/api/events/553891738922517414"></a></div>
 </body>
 </html>

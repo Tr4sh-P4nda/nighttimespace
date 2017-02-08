@@ -328,7 +328,7 @@
 					scene.add(snowDownButton);
 					snowDownButton.position.set(-570,0,2770);
 					snowDownButton.addEventListener('cursordown', function(event) {
-						if (numSnowflakes >= 100) {numSnowflakes -= 50;}
+						if (numSnowflakes > 100) {numSnowflakes -= 50;}
 						console.log("subtracting 100 snowflakes");
 					});
 
@@ -418,8 +418,13 @@
 						for(var i = 0; i < numSnowflakes; ++i) {
 							snowflakes.push(createSnowFlake());
 						}
+					}else if(snowflakes.length > numSnowflakes){ 				////NEED THIS TO DECREASE SNOW
+						for(var i = numSnowflakes; i < snowflakes.length; ++i) {
+							scene.remove(snowflakes[snowflakes.length - 1]); 	////REMOVE LAST SNOWFLAKE IN ARRAY FROM SCENE
+							snowflakes.pop(); 									////REMOVE IT FROM THE ARRAY
+						};
 					} else {
-						for(var i = 0; i < numSnowflakes; ++i) {
+						for(var i = 0; i < snowflakes.length; ++i) {
 							snowflakes[i].position.y = snowflakes[i].position.y - snowGravity;
 							snowflakes[i].position.x = (snowflakes[i].position.x) + (Math.sin(((animationInc*snowDriftSpeed) + (i*snowDriftSeparation)))*snowDriftDistanceX);
 							snowflakes[i].position.z = (snowflakes[i].position.z) + (Math.cos(((animationInc*snowDriftSpeed) + (i*snowDriftSeparation)))*snowDriftDistanceZ);
@@ -428,9 +433,10 @@
 							(snowflakes[i].position.x < (((userHead.position.x-scene.position.x) * ppm) - flakeBoxWidth)) ||
 							(snowflakes[i].position.x > (((userHead.position.x-scene.position.x) * ppm) + flakeBoxWidth)) ||
 							(snowflakes[i].position.z < (((userHead.position.z-scene.position.z) * ppm) - flakeBoxDepth)) ||
-							(snowflakes[i].position.z > (((userHead.position.z-scene.position.z) * ppm) + flakeBoxDepth))) {
-							snowflakes[i].position.set((((userHead.position.x-scene.position.x) * ppm) + RandFloat((flakeBoxWidth*-1), flakeBoxWidth)), (((userHead.position.y-scene.position.y) * ppm) + RandFloat((flakeBoxHeight*-1), flakeBoxHeight)), (((userHead.position.z-scene.position.z) * ppm) + RandFloat((flakeBoxDepth*-1), flakeBoxDepth)));
-							}
+							(snowflakes[i].position.z > (((userHead.position.z-scene.position.z) * ppm) + flakeBoxDepth))) 
+								{
+								snowflakes[i].position.set((((userHead.position.x-scene.position.x) * ppm) + RandFloat((flakeBoxWidth*-1), flakeBoxWidth)), (((userHead.position.y-scene.position.y) * ppm) + RandFloat((flakeBoxHeight*-1), flakeBoxHeight)), (((userHead.position.z-scene.position.z) * ppm) + RandFloat((flakeBoxDepth*-1), flakeBoxDepth)));
+								}
 
 							var flakeAim = new THREE.Vector3(((userHead.position.x-scene.position.x) * ppm), ((userHead.position.y-scene.position.y) * ppm), ((userHead.position.z-scene.position.z) * ppm));
 							snowflakes[i].lookAt(flakeAim);

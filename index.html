@@ -413,11 +413,13 @@
 				
 
 				//create and animate snowflakes
+				
 				if (snowflakesEnabled == true) {
-					if (snowflakes.length < numSnowflakes){
-						for(var i = 0; i < numSnowflakes; ++i) {
-							snowflakes.push(createSnowFlake());
-						}
+ 					if (snowflakes.length < numSnowflakes){
+						var numNewSnowflakes = numSnowflakes - snowflakes.length;
+ 						for(var i = 0; i < numNewSnowflakes; ++i) {
+ 							snowflakes.push(createSnowFlake());
+ 						}
 					}else if(snowflakes.length > numSnowflakes){ 				////NEED THIS TO DECREASE SNOW
 						for(var i = numSnowflakes; i < snowflakes.length; ++i) {
 							scene.remove(snowflakes[snowflakes.length - 1]); 	////REMOVE LAST SNOWFLAKE IN ARRAY FROM SCENE

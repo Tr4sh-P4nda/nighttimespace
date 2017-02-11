@@ -6,7 +6,9 @@
 <script src="https://cdn.rawgit.com/mrdoob/three.js/r76/build/three.min.js"></script>
 <script src="https://sdk.altvr.com/libs/altspace.js/0.26.3/altspace.min.js"></script>
 <script src="https://cdn.rawgit.com/Ooblik/AltspaceVR-Native-Components-JS/master/js/JSNativeComponents.js"></script>
-<script type="text/javascript" src="https://cdn.rawgit.com/norybiak/UltimateLoader/v0.1.7/dist/UltimateLoader.min.js"></script>
+<script src="https://cdn.rawgit.com/norybiak/UltimateLoader/v0.1.7/dist/UltimateLoader.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase.js"></script>
+<script src="assets/shots.js"></script>
 </head>
 <body>
     <script>
@@ -111,7 +113,7 @@
 			}
 
 			function createSnowFlake() {
-			var tex = new THREE.ImageUtils.loadTexture("assets/snowflakes.png");
+			var tex = new THREE.TextureLoader().load("assets/snowflakes.png");
 			tex.offset = new THREE.Vector2( (RandInt(0, 3)/4), (RandInt(0, 3)/4)); // I am applied to each new object instance constructed by this function
 			tex.repeat = new THREE.Vector2( .25, .25);
 			var snowflake = new THREE.Mesh(new THREE.PlaneGeometry(snowflakeSize, snowflakeSize, 1, 1), new THREE.MeshBasicMaterial({ map: tex, transparent: true, side: THREE.DoubleSide}));
@@ -233,7 +235,6 @@
 						obj.children[1].userData.altspace = {collider: {enabled: false}};
 						obj.position.set(5, 14, 5);
 						discoball = obj;
-						console.log(obj);
 						var meshColliderDisco = new NativeComponent('n-mesh-collider', {convex: false}, obj);
 						
 						discoballMat = discoball.children[1].material;
@@ -243,8 +244,23 @@
 
                     modelRoot.add(obj);
                 }
+            				
+				var signs = new shotsSet();
+				scene.add(signs.sign1, signs.sign2, signs.sign3);
+				signs.color1.setRGB(1, 0, 0);
+				signs.color2.setRGB(0, 1, 0);
+				signs.color3.setRGB(0, 0, 1);
+				signs.sign1.rotation.y = THREE.Math.degToRad(-90);
+				signs.sign2.rotation.y = THREE.Math.degToRad(-90);
+				signs.sign3.rotation.y = THREE.Math.degToRad(-90);
+				signs.sign1.scale.setScalar(340);
+				signs.sign2.scale.setScalar(340);
+				signs.sign3.scale.setScalar(340);
+				signs.sign1.position.set(-1420, -60, 4130);
+				signs.sign2.position.set(-1420, -60, 4440);
+				signs.sign3.position.set(-1420, -60, 4750);
             }
-
+			
 			function start() {
 			    scene.scale.set(1/ppm, 1/ppm, 1/ppm);
 			    //scene.position.set(-2.37, 2.68, -5.84);
@@ -276,7 +292,7 @@
 					var ceilingBlock = new NativeComponent('n-box-collider', null, ceilingBox).addTo(scene);
 
 					//Create the moon visuals
-					var moonTexture = THREE.ImageUtils.loadTexture( "assets/moon.jpg" );
+					var moonTexture = new THREE.TextureLoader().load("assets/moon.jpg");
 					moon = new THREE.Mesh(new THREE.SphereGeometry(8000, 80, 80), new THREE.MeshBasicMaterial({ color: 0xffffff, map: moonTexture }));
 					moon.position.set(moonPosition.x, moonPosition.y, moonPosition.z);
 					moon.userData.altspace = {collider: {enabled: false}};
@@ -303,7 +319,7 @@
 					scene.add(fireContainer);
 					
 			//ENVIRONMENT CONTROL PANELw
-					var snowButtonTex = THREE.ImageUtils.loadTexture( "assets/snowtile.jpg" );
+					var snowButtonTex = new THREE.TextureLoader().load("assets/snowtile.jpg");
 					var snowButton = new THREE.Mesh(new THREE.SphereGeometry(20, 80, 80, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0xffffff, map: snowButtonTex }));
 					scene.add(snowButton);
 					snowButton.position.set(-530,10,2770);
@@ -312,7 +328,6 @@
 						console.log(snowflakesEnabled);
 					});
 
-					//var snowUpbuttonTex = THREE.ImageUtils.loadTexture( "assets/snowtile.jpg" );
 					var snowUpButton = new THREE.Mesh(new THREE.SphereGeometry(10, 80, 80, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0x00ff00 }));
 					scene.add(snowUpButton);
 					snowUpButton.position.set(-570,20,2770);
@@ -321,7 +336,6 @@
 						console.log("adding 100 snowflakes");
 					});
 
-					//var snowDownButtonTex = THREE.ImageUtils.loadTexture( "assets/snowtile.jpg" );
 					var snowDownButton = new THREE.Mesh(new THREE.SphereGeometry(10, 80, 80, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
 					scene.add(snowDownButton);
 					snowDownButton.position.set(-570,0,2770);
@@ -330,7 +344,7 @@
 						console.log("subtracting 100 snowflakes");
 					});
 
-					var snowControlPanelTex = THREE.ImageUtils.loadTexture( "assets/snowcontrolpanel.png" );
+					var snowControlPanelTex = new THREE.TextureLoader().load("assets/snowcontrolpanel.png");
 					var snowControlPanel = new THREE.Mesh(new THREE.PlaneGeometry(150, 150, 1), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, map: snowControlPanelTex }));
 					scene.add(snowControlPanel);
 					snowControlPanel.position.set(-550,10,2765);
@@ -380,10 +394,15 @@
 
 					scene.position.set(-2.37, 2.68, -5.84);
 
-
 					// Run animation loop
-					animate();
-
+					(function animateYet(){
+						if(skybox1 && moon && discoball){	//make sure these exist before animating
+							animate();						//to prevent console errors
+							return;
+						};
+						requestAnimationFrame(animateYet);
+					}());
+										
 				}).catch(function (err)
 
 			{

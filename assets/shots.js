@@ -9,7 +9,7 @@ var color2 = new THREE.Color;
 var color3 = new THREE.Color;
 var shotsAudio = new NativeComponent('n-sound', {
 	src: "assets/shots.ogg",
-	volume: 0.5,
+	volume: 1,
 	minDistance: 1,
 	maxDistance: 50,
 	rolloff: "cosine"

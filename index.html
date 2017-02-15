@@ -112,17 +112,17 @@
 			}
 
 			function createSnowFlake() {
-				var tex = new THREE.ImageUtils.loadTexture("assets/snowflakes.png");
-				tex.offset = new THREE.Vector2( (RandInt(0, 3)/4), (RandInt(0, 3)/4)); // I am applied to each new object instance constructed by this function
-				tex.repeat = new THREE.Vector2( .25, .25);
-				var snowflake = new THREE.Mesh(new THREE.PlaneGeometry(snowflakeSize, snowflakeSize, 1, 1), new THREE.MeshBasicMaterial({ map: tex, transparent: true, side: THREE.DoubleSide}));
-				scene.add(snowflake);
-				snowflake.userData.altspace = {collider: {enabled: false}};
-				snowflake.position.set((((userHead.position.x-scene.position.x) * ppm) + RandFloat((flakeBoxWidth*-1), flakeBoxWidth)), (((userHead.position.y-scene.position.y) * ppm) + RandFloat((flakeBoxHeight*-1), flakeBoxHeight)), (((userHead.position.z-scene.position.z) * ppm) + RandFloat((flakeBoxDepth*-1), flakeBoxDepth)));
-				((userHead.position.y-scene.position.y) * ppm)
-				snowflake.lookAt((userHead.position.y-scene.position.y) * ppm)
-				return snowflake;
-				}
+			var tex = new THREE.ImageUtils.loadTexture("assets/snowflakes.png");
+			tex.offset = new THREE.Vector2( (RandInt(0, 3)/4), (RandInt(0, 3)/4)); // I am applied to each new object instance constructed by this function
+			tex.repeat = new THREE.Vector2( .25, .25);
+			var snowflake = new THREE.Mesh(new THREE.PlaneGeometry(snowflakeSize, snowflakeSize, 1, 1), new THREE.MeshBasicMaterial({ map: tex, transparent: true, side: THREE.DoubleSide}));
+			scene.add(snowflake);
+			snowflake.userData.altspace = {collider: {enabled: false}};
+			snowflake.position.set((((userHead.position.x-scene.position.x) * ppm) + RandFloat((flakeBoxWidth*-1), flakeBoxWidth)), (((userHead.position.y-scene.position.y) * ppm) + RandFloat((flakeBoxHeight*-1), flakeBoxHeight)), (((userHead.position.z-scene.position.z) * ppm) + RandFloat((flakeBoxDepth*-1), flakeBoxDepth)));
+			((userHead.position.y-scene.position.y) * ppm)
+			snowflake.lookAt((userHead.position.y-scene.position.y) * ppm)
+			return snowflake;
+			}
 
 			function onLoaded() {
 				var modelRoot = new THREE.Group();
@@ -180,7 +180,6 @@
 							if (child instanceof THREE.Mesh) 
 							{ 
 								child.userData.altspace = {collider: {enabled: false}};
-								child.material.map = new THREE.ImageUtils.loadTexture("assets/shine.png");
 							}
 						})
 						var cabinCollider = new NativeComponent('n-mesh-collider', {convex: false}, obj);

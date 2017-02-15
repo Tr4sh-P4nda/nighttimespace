@@ -244,13 +244,13 @@
 					}
 					
 					if (name === 'discoballnighttimespace') {
-						obj.children[1].userData.altspace = {collider: {enabled: false}};
+						obj.children[0].userData.altspace = {collider: {enabled: false}};
 						obj.position.set(5, 14, 5);
 						discoball = obj;
 						console.log(obj);
 						var meshColliderDisco = new NativeComponent('n-mesh-collider', {convex: false}, obj);
 						
-						discoballMat = discoball.children[1].material;
+						discoballMat = discoball.children[0].material;
 						discoballMat.map.wrapT = THREE.RepeatWrapping;
 						discoballMat.map.wrapS = THREE.RepeatWrapping;
 					}

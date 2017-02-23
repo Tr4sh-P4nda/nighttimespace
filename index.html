@@ -89,7 +89,8 @@
 			function createSkybox(url, update, _opacity) {
 				var _opacity = _opacity || false;
 				var sphereGeo = new THREE.SphereGeometry(400, 20, 20, Math.PI + 0.3, -2*Math.PI);
-				var texture = THREE.ImageUtils.loadTexture( url );
+				//var texture = THREE.ImageUtils.loadTexture( url );
+				var texture = new THREE.Texture({ src: 'https://wacomalt.github.io/nighttimespace/' + url });
 
 				texture.needsUpdate = update;
 				texture.minFilter = THREE.LinearFilter;

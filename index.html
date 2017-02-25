@@ -323,12 +323,12 @@
 
 					//Create the moon visuals
 					var moonTexture = THREE.ImageUtils.loadTexture( "assets/moon.jpg" );
-					moon = new THREE.Mesh(new THREE.SphereGeometry(8000, 16, 16), new THREE.MeshBasicMaterial({ color: 0xffffff, map: moonTexture }));
+					moon = new THREE.Mesh(new THREE.SphereGeometry(8000, 60, 60), new THREE.MeshBasicMaterial({ color: 0xffffff, map: moonTexture }));
 					moon.position.set(moonPosition.x, moonPosition.y, moonPosition.z);
 					moon.userData.altspace = {collider: {enabled: false}};
 					scene.add(moon);
 
-					var moonColliderMesh = new THREE.Mesh(new THREE.SphereGeometry(8000, 16, 16), new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0}));
+					var moonColliderMesh = new THREE.Mesh(new THREE.SphereGeometry(8000, 60, 60), new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0}));
 					moonColliderMesh.position.set(moonPosition.x, moonPosition.y, moonPosition.z);
 					var moonCollider = new NativeComponent('n-sphere-collider', {radius: 8000}, moonColliderMesh).addTo(scene);
 

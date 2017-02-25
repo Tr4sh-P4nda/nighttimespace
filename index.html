@@ -5,16 +5,42 @@
 <title>Nighttime Space</title>
 <script src="https://cdn.rawgit.com/mrdoob/three.js/r76/build/three.min.js"></script>
 <script src="https://sdk.altvr.com/libs/altspace.js/0.26.3/altspace.min.js"></script>
-<script src="https://cdn.rawgit.com/Ooblik/AltspaceVR-Native-Components-JS/master/js/JSNativeComponents.js"></script>
+<script src="https://cdn.rawgit.com/oOblik/AltspaceVR-Native-Components-JS/0.1.2/js/JSNativeComponents.js"></script>
 <script src="https://cdn.rawgit.com/norybiak/UltimateLoader/v0.3.0/dist/UltimateLoader.min.js"></script>
 </head>
 <body>
     <script>
+		// We override the default image loader since we don't want the altspace browser to load textures.
+		// The client handles texture loading directly.
+		THREE.Loader.Handlers.add(
+			/jpe?g|png/i,
+			{
+				load: function (url) {
+					// construct an absolute url
+					if (url && !url.startsWith('http') && !url.startsWith('//')) {
+						if (url.startsWith('/')) {
+							url = location.origin + url;
+						}
+						else {
+							var currPath = location.pathname;
+							if (!currPath.endsWith('/')) {
+								currPath = location.pathname.split('/').slice(0, -1).join('/') + '/';
+							}
+							url = location.origin + currPath + url;
+						}
+					}
+					console.info('Allowing Altspace to load ' + url);
+					var image = {src: url};
+					return new THREE.Texture(image);
+				}
+			}
+		);
+
         if (!window.altspace || !window.altspace.inClient) document.write('<h3>Bruh, This is an AltspaceVR app. Why you trying to open it in a browser? Get altspace here: <a href="http://altvr.com"> AltspaceVR </a></h3>');
 
 		var NighttimeSpace = (function() {
 			var scene = new THREE.Scene();
-			var renderer = altspace.getThreeJSRenderer();
+			var renderer = altspace.getThreeJSRenderer({initialSerializationBufferSize: 9100000});
 
 			var ppm = 246.913574;
 			var loadedObjects = [];
@@ -88,9 +114,8 @@
 
 			function createSkybox(url, update, _opacity) {
 				var _opacity = _opacity || false;
-				var sphereGeo = new THREE.SphereGeometry(400, 20, 20, Math.PI + 0.3, -2*Math.PI);
-				//var texture = THREE.ImageUtils.loadTexture( url );
-				var texture = new THREE.Texture({ src: 'https://wacomalt.github.io/nighttimespace/' + url });
+				var sphereGeo = new THREE.SphereGeometry(400, 16, 16, Math.PI + 0.3, -2*Math.PI);
+				var texture = THREE.ImageUtils.loadTexture( url );
 
 				texture.needsUpdate = update;
 				texture.minFilter = THREE.LinearFilter;
@@ -298,12 +323,12 @@
 
 					//Create the moon visuals
 					var moonTexture = THREE.ImageUtils.loadTexture( "assets/moon.jpg" );
-					moon = new THREE.Mesh(new THREE.SphereGeometry(8000, 80, 80), new THREE.MeshBasicMaterial({ color: 0xffffff, map: moonTexture }));
+					moon = new THREE.Mesh(new THREE.SphereGeometry(8000, 16, 16), new THREE.MeshBasicMaterial({ color: 0xffffff, map: moonTexture }));
 					moon.position.set(moonPosition.x, moonPosition.y, moonPosition.z);
 					moon.userData.altspace = {collider: {enabled: false}};
 					scene.add(moon);
 
-					var moonColliderMesh = new THREE.Mesh(new THREE.SphereGeometry(8000, 80, 80), new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0}));
+					var moonColliderMesh = new THREE.Mesh(new THREE.SphereGeometry(8000, 16, 16), new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0}));
 					moonColliderMesh.position.set(moonPosition.x, moonPosition.y, moonPosition.z);
 					var moonCollider = new NativeComponent('n-sphere-collider', {radius: 8000}, moonColliderMesh).addTo(scene);
 
@@ -325,7 +350,7 @@
 					
 			//ENVIRONMENT CONTROL PANELw
 					var snowButtonTex = THREE.ImageUtils.loadTexture( "assets/snowtile.jpg" );
-					var snowButton = new THREE.Mesh(new THREE.SphereGeometry(20, 80, 80, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0xffffff, map: snowButtonTex }));
+					var snowButton = new THREE.Mesh(new THREE.SphereGeometry(20, 8, 8, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0xffffff, map: snowButtonTex }));
 					scene.add(snowButton);
 					snowButton.position.set(-530,10,2770);
 					snowButton.addEventListener('cursordown', function(event) {
@@ -334,7 +359,7 @@
 					});
 
 					//var snowUpbuttonTex = THREE.ImageUtils.loadTexture( "assets/snowtile.jpg" );
-					var snowUpButton = new THREE.Mesh(new THREE.SphereGeometry(10, 80, 80, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0x00ff00 }));
+					var snowUpButton = new THREE.Mesh(new THREE.SphereGeometry(10, 8, 8, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0x00ff00 }));
 					scene.add(snowUpButton);
 					snowUpButton.position.set(-570,20,2770);
 					snowUpButton.addEventListener('cursordown', function(event) {
@@ -343,7 +368,7 @@
 					});
 
 					//var snowDownButtonTex = THREE.ImageUtils.loadTexture( "assets/snowtile.jpg" );
-					var snowDownButton = new THREE.Mesh(new THREE.SphereGeometry(10, 80, 80, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
+					var snowDownButton = new THREE.Mesh(new THREE.SphereGeometry(10, 8, 8, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
 					scene.add(snowDownButton);
 					snowDownButton.position.set(-570,0,2770);
 					snowDownButton.addEventListener('cursordown', function(event) {
@@ -427,8 +452,10 @@
 				moon.rotation.y += -0.000032;
 				moon.rotation.z += -0.0000155;
 				
-				discoball.rotation.y += 0.01;
-				discoballMat.map.offset.x = ((THREE.Math.radToDeg(discoball.rotation.y)-180)/360);
+				if (discoball) {
+					discoball.rotation.y += 0.01;
+					discoballMat.map.offset.x = ((THREE.Math.radToDeg(discoball.rotation.y)-180)/360);
+				}
 				
 
 				//create and animate snowflakes

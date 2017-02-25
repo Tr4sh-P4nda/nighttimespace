@@ -10,6 +10,32 @@
 </head>
 <body>
     <script>
+		// We override the default image loader since we don't want the altspace browser to load textures.
+		// The client handles texture loading directly.
+		THREE.Loader.Handlers.add(
+			/jpe?g|png/i,
+			{
+				load: function (url) {
+					// construct an absolute url
+					if (url && !url.startsWith('http') && !url.startsWith('//')) {
+						if (url.startsWith('/')) {
+							url = location.origin + url;
+						}
+						else {
+							var currPath = location.pathname;
+							if (!currPath.endsWith('/')) {
+								currPath = location.pathname.split('/').slice(0, -1).join('/') + '/';
+							}
+							url = location.origin + currPath + url;
+						}
+					}
+					console.info('Allowing Altspace to load ' + url);
+					var image = {src: url};
+					return new THREE.Texture(image);
+				}
+			}
+		);
+
         if (!window.altspace || !window.altspace.inClient) document.write('<h3>Bruh, This is an AltspaceVR app. Why you trying to open it in a browser? Get altspace here: <a href="http://altvr.com"> AltspaceVR </a></h3>');
 
 		var NighttimeSpace = (function() {

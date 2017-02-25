@@ -88,7 +88,7 @@
 
 			function createSkybox(url, update, _opacity) {
 				var _opacity = _opacity || false;
-				var sphereGeo = new THREE.SphereGeometry(400, 20, 20, Math.PI + 0.3, -2*Math.PI);
+				var sphereGeo = new THREE.SphereGeometry(400, 16, 16, Math.PI + 0.3, -2*Math.PI);
 				//var texture = THREE.ImageUtils.loadTexture( url );
 				var texture = new THREE.Texture({ src: 'https://wacomalt.github.io/nighttimespace/' + url });
 
@@ -298,12 +298,12 @@
 
 					//Create the moon visuals
 					var moonTexture = THREE.ImageUtils.loadTexture( "assets/moon.jpg" );
-					moon = new THREE.Mesh(new THREE.SphereGeometry(8000, 80, 80), new THREE.MeshBasicMaterial({ color: 0xffffff, map: moonTexture }));
+					moon = new THREE.Mesh(new THREE.SphereGeometry(8000, 16, 16), new THREE.MeshBasicMaterial({ color: 0xffffff, map: moonTexture }));
 					moon.position.set(moonPosition.x, moonPosition.y, moonPosition.z);
 					moon.userData.altspace = {collider: {enabled: false}};
 					scene.add(moon);
 
-					var moonColliderMesh = new THREE.Mesh(new THREE.SphereGeometry(8000, 80, 80), new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0}));
+					var moonColliderMesh = new THREE.Mesh(new THREE.SphereGeometry(8000, 16, 16), new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0}));
 					moonColliderMesh.position.set(moonPosition.x, moonPosition.y, moonPosition.z);
 					var moonCollider = new NativeComponent('n-sphere-collider', {radius: 8000}, moonColliderMesh).addTo(scene);
 
@@ -325,7 +325,7 @@
 					
 			//ENVIRONMENT CONTROL PANELw
 					var snowButtonTex = THREE.ImageUtils.loadTexture( "assets/snowtile.jpg" );
-					var snowButton = new THREE.Mesh(new THREE.SphereGeometry(20, 80, 80, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0xffffff, map: snowButtonTex }));
+					var snowButton = new THREE.Mesh(new THREE.SphereGeometry(20, 8, 8, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0xffffff, map: snowButtonTex }));
 					scene.add(snowButton);
 					snowButton.position.set(-530,10,2770);
 					snowButton.addEventListener('cursordown', function(event) {
@@ -334,7 +334,7 @@
 					});
 
 					//var snowUpbuttonTex = THREE.ImageUtils.loadTexture( "assets/snowtile.jpg" );
-					var snowUpButton = new THREE.Mesh(new THREE.SphereGeometry(10, 80, 80, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0x00ff00 }));
+					var snowUpButton = new THREE.Mesh(new THREE.SphereGeometry(10, 8, 8, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0x00ff00 }));
 					scene.add(snowUpButton);
 					snowUpButton.position.set(-570,20,2770);
 					snowUpButton.addEventListener('cursordown', function(event) {
@@ -343,7 +343,7 @@
 					});
 
 					//var snowDownButtonTex = THREE.ImageUtils.loadTexture( "assets/snowtile.jpg" );
-					var snowDownButton = new THREE.Mesh(new THREE.SphereGeometry(10, 80, 80, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
+					var snowDownButton = new THREE.Mesh(new THREE.SphereGeometry(10, 8, 8, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
 					scene.add(snowDownButton);
 					snowDownButton.position.set(-570,0,2770);
 					snowDownButton.addEventListener('cursordown', function(event) {

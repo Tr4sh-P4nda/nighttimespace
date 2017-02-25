@@ -40,7 +40,7 @@
 
 		var NighttimeSpace = (function() {
 			var scene = new THREE.Scene();
-			var renderer = altspace.getThreeJSRenderer({initialSerializationBufferSize: 910000});
+			var renderer = altspace.getThreeJSRenderer({initialSerializationBufferSize: 9100000});
 
 			var ppm = 246.913574;
 			var loadedObjects = [];
@@ -115,8 +115,7 @@
 			function createSkybox(url, update, _opacity) {
 				var _opacity = _opacity || false;
 				var sphereGeo = new THREE.SphereGeometry(400, 16, 16, Math.PI + 0.3, -2*Math.PI);
-				//var texture = THREE.ImageUtils.loadTexture( url );
-				var texture = new THREE.Texture({ src: 'https://wacomalt.github.io/nighttimespace/' + url });
+				var texture = THREE.ImageUtils.loadTexture( url );
 
 				texture.needsUpdate = update;
 				texture.minFilter = THREE.LinearFilter;
@@ -453,8 +452,10 @@
 				moon.rotation.y += -0.000032;
 				moon.rotation.z += -0.0000155;
 				
-				discoball.rotation.y += 0.01;
-				discoballMat.map.offset.x = ((THREE.Math.radToDeg(discoball.rotation.y)-180)/360);
+				if (discoball) {
+					discoball.rotation.y += 0.01;
+					discoballMat.map.offset.x = ((THREE.Math.radToDeg(discoball.rotation.y)-180)/360);
+				}
 				
 
 				//create and animate snowflakes

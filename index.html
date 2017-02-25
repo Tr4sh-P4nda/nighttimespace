@@ -40,7 +40,7 @@
 
 		var NighttimeSpace = (function() {
 			var scene = new THREE.Scene();
-			var renderer = altspace.getThreeJSRenderer();
+			var renderer = altspace.getThreeJSRenderer({initialSerializationBufferSize: 910000});
 
 			var ppm = 246.913574;
 			var loadedObjects = [];

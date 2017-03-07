@@ -455,24 +455,32 @@
 					
 					//scene.position.set(-2.37, 2.68, -5.84);
 					
-					// no snow area
-					var noSnowArea = new THREE.Mesh(new THREE.BoxGeometry(14.63, 11.5, 14.45));
-					noSnowArea.position.set(1.75, 5.85, -1.7);
-					noSnowArea.material.visible = false;
-					noSnowArea.userData.altspace = {collider:{enabled: false}};
-
-					noSnowArea.addBehavior(altspace.utilities.behaviors.JointCollisionEvents({joints: [["Head"]], jointCubeSize: .01}));
-
-					noSnowArea.addEventListener("jointcollisionenter", function(event) {
-						console.log("joint is now colliding with object");
-						outside = false;
-					});
-					noSnowArea.addEventListener("jointcollisionleave", function(event) {
-						console.log("joint is no longer colliding with object");
-						outside = true;
-					});
+					//no snow in building
+					var noSnowArea1 = new THREE.Mesh(new THREE.BoxGeometry(14.63, 11.5, 14.45));
+					noSnowArea1.position.set(1.75, 5.85, -1.7);
+					noSnowArea1.material.visible = false;
+					noSnowArea1.userData.altspace = {collider:{enabled: false}};
+					noSnowArea1.addBehavior(altspace.utilities.behaviors.JointCollisionEvents({joints: [["Head"]], jointCubeSize: .01}));
+					noSnowArea1.addEventListener("jointcollisionenter", function(){outside = false});
+					noSnowArea1.addEventListener("jointcollisionleave", function(){outside = true});
+					//no snow in shack
+					var noSnowArea2 = new THREE.Mesh(new THREE.BoxGeometry(4.6, 4.5, 4.8));
+					noSnowArea2.position.set(-5.7, 1, 12.15);
+					noSnowArea2.material.visible = false;
+					noSnowArea2.userData.altspace = {collider:{enabled: false}};
+					noSnowArea2.addBehavior(altspace.utilities.behaviors.JointCollisionEvents({joints: [["Head"]], jointCubeSize: .01}));
+					noSnowArea2.addEventListener("jointcollisionenter", function(){outside = false});
+					noSnowArea2.addEventListener("jointcollisionleave", function(){outside = true});
+					//no snow under tent
+					var noSnowArea3 = new THREE.Mesh(new THREE.BoxGeometry(6, 3, 6.3));
+					noSnowArea3.position.set(19.3, 1, -17.1);
+					noSnowArea3.material.visible = false;
+					noSnowArea2.userData.altspace = {collider:{enabled: false}};
+					noSnowArea3.addBehavior(altspace.utilities.behaviors.JointCollisionEvents({joints: [["Head"]], jointCubeSize: .01}));
+					noSnowArea3.addEventListener("jointcollisionenter", function(){outside = false});
+					noSnowArea3.addEventListener("jointcollisionleave", function(){outside = true});
 					
-					scene.add(noSnowArea);
+					scene.add(noSnowArea1, noSnowArea2, noSnowArea3);
 					
 					// Run animation loop
 					animate();

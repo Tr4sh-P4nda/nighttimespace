@@ -368,11 +368,11 @@
 					scene.add(fireContainer);
 					
 			//ENVIRONMENT CONTROL PANEL
-			
+					var snowControlPanelGroup = new THREE.Group;
 					var snowButtonTex = THREE.ImageUtils.loadTexture( "assets/snowtile.jpg" );
 					var snowButton = new THREE.Mesh(new THREE.SphereGeometry(0.08100000204930005, 8, 8, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0xffffff, map: snowButtonTex }));
-					scene.add(snowButton);
-					snowButton.position.set(-4.5165000543064515, 2.72050000102465, 5.378500283828057);
+					snowControlPanelGroup.add(snowButton);
+					snowButton.position.set(-0.108, 0, 0);
 					snowButton.addEventListener('cursordown', function(event) {
 						snowflakesEnabled = !snowflakesEnabled;
 						console.log(snowflakesEnabled);
@@ -380,8 +380,8 @@
 
 					//var snowUpbuttonTex = THREE.ImageUtils.loadTexture( "assets/snowtile.jpg" );
 					var snowUpButton = new THREE.Mesh(new THREE.SphereGeometry(0.040500001024650026, 8, 8, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0x00ff00 }));
-					scene.add(snowUpButton);
-					snowUpButton.position.set(-4.678500058405051, 2.7610000020493004, 5.378500283828057);
+					snowControlPanelGroup.add(snowUpButton);
+					snowUpButton.position.set(0.054, 0.041, 0);
 					snowUpButton.addEventListener('cursordown', function(event) {
 						if (numSnowflakes < 2000) {numSnowflakes += 50;}
 						console.log("adding 100 snowflakes");
@@ -389,8 +389,8 @@
 
 					//var snowDownButtonTex = THREE.ImageUtils.loadTexture( "assets/snowtile.jpg" );
 					var snowDownButton = new THREE.Mesh(new THREE.SphereGeometry(0.040500001024650026, 8, 8, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
-					scene.add(snowDownButton);
-					snowDownButton.position.set(-4.678500058405051, 2.68, 5.378500283828057);
+					snowControlPanelGroup.add(snowDownButton);
+					snowDownButton.position.set(0.054, -0.041, 0);
 					snowDownButton.addEventListener('cursordown', function(event) {
 						if (numSnowflakes > 100) {numSnowflakes -= 50;}
 						console.log("subtracting 100 snowflakes");
@@ -398,10 +398,12 @@
 
 					var snowControlPanelTex = THREE.ImageUtils.loadTexture( "assets/snowcontrolpanel.png" );
 					var snowControlPanel = new THREE.Mesh(new THREE.PlaneGeometry(0.6075000153697504, 0.6075000153697504, 1), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, map: snowControlPanelTex }));
-					scene.add(snowControlPanel);
-					snowControlPanel.position.set(-4.597500056355751, 2.72050000102465, 5.358250283315732);
+					snowControlPanelGroup.add(snowControlPanel);
+					snowControlPanel.position.set(0.027, 0, 0);
 					snowControlPanel.rotation.y = THREE.Math.degToRad(180);
 					//masterScale = enclosure.pixelsPerMeter * config.modelScaleFactor;
+					
+					snowControlPanelGroup.position.set(-4.624, 2.720, 5.378);
 
 					// Build ultimateloader array
 					var objectUrls = new Array(models.length);

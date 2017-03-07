@@ -14,6 +14,8 @@
 		// We override the default image loader since we don't want the altspace browser to load textures.
 		// The client handles texture loading directly.
 		
+		var snowControlPanelGroup;
+		
 		THREE.Loader.Handlers.add(
 			/jpe?g|png/i,
 			{
@@ -368,7 +370,7 @@
 					scene.add(fireContainer);
 					
 			//ENVIRONMENT CONTROL PANEL
-					var snowControlPanelGroup = new THREE.Group;
+					snowControlPanelGroup = new THREE.Group;
 					var snowButtonTex = THREE.ImageUtils.loadTexture( "assets/snowtile.jpg" );
 					var snowButton = new THREE.Mesh(new THREE.SphereGeometry(0.08100000204930005, 8, 8, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0xffffff, map: snowButtonTex }));
 					snowControlPanelGroup.add(snowButton);

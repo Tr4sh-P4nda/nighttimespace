@@ -15,6 +15,9 @@
 		// The client handles texture loading directly.
 		
 		var snowControlPanelGroup;
+		var snowButton;
+		var snowUpButton;
+		var snowDownButton;
 		
 		THREE.Loader.Handlers.add(
 			/jpe?g|png/i,
@@ -372,7 +375,7 @@
 			//ENVIRONMENT CONTROL PANEL
 					snowControlPanelGroup = new THREE.Group;
 					var snowButtonTex = THREE.ImageUtils.loadTexture( "assets/snowtile.jpg" );
-					var snowButton = new THREE.Mesh(new THREE.SphereGeometry(0.08100000204930005, 8, 8, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0xffffff, map: snowButtonTex }));
+					snowButton = new THREE.Mesh(new THREE.SphereGeometry(0.08100000204930005, 8, 8, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0xffffff, map: snowButtonTex }));
 					snowControlPanelGroup.add(snowButton);
 					snowButton.position.set(-0.108, 0, 0);
 					snowButton.addEventListener('cursordown', function(event) {
@@ -381,7 +384,7 @@
 					});
 
 					//var snowUpbuttonTex = THREE.ImageUtils.loadTexture( "assets/snowtile.jpg" );
-					var snowUpButton = new THREE.Mesh(new THREE.SphereGeometry(0.040500001024650026, 8, 8, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0x00ff00 }));
+					snowUpButton = new THREE.Mesh(new THREE.SphereGeometry(0.040500001024650026, 8, 8, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0x00ff00 }));
 					snowControlPanelGroup.add(snowUpButton);
 					snowUpButton.position.set(0.054, 0.041, 0);
 					snowUpButton.addEventListener('cursordown', function(event) {
@@ -390,7 +393,7 @@
 					});
 
 					//var snowDownButtonTex = THREE.ImageUtils.loadTexture( "assets/snowtile.jpg" );
-					var snowDownButton = new THREE.Mesh(new THREE.SphereGeometry(0.040500001024650026, 8, 8, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
+					snowDownButton = new THREE.Mesh(new THREE.SphereGeometry(0.040500001024650026, 8, 8, Math.PI + 0.3, 2*Math.PI), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
 					snowControlPanelGroup.add(snowDownButton);
 					snowDownButton.position.set(0.054, -0.041, 0);
 					snowDownButton.addEventListener('cursordown', function(event) {

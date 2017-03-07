@@ -230,6 +230,19 @@
 						var cabinCollider = new NativeComponent('n-mesh-collider', {convex: false}, obj);
 						obj.position.y = .1;
 					}
+					
+					if (name === 'snowcontrolpanel') {
+						
+						obj.traverse( function(child) 
+						{
+							if (child instanceof THREE.Mesh) 
+							{ 
+								child.userData.altspace = {collider: {enabled: false}};
+							}
+						})
+						var cabinCollider = new NativeComponent('n-mesh-collider', {convex: false}, obj);
+						obj.position.y = 0;
+					}
 
 					if (name === 'tenttop') {
 						obj.traverse( function(child) 

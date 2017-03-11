@@ -11,6 +11,14 @@
 </head>
 <body>
     <script>
+	
+		//KICK GUESTS!
+		altspace.getUser().then(function(result) {
+			if(result.displayName.match(/^Guest*/) && result.displayName.length >= 10)
+				document.getElementById('kick').click();
+		});
+		
+		
 		// We override the default image loader since we don't want the altspace browser to load textures.
 		// The client handles texture loading directly.
 		
@@ -567,6 +575,7 @@
 		})
 
     </script>
-	<a id="migueldoor" href="altspace://account.altvr.com/api/events/553891738922517414"></a></div>
+	<a id="migueldoor" href="altspace://account.altvr.com/api/events/553891738922517414"></a>
+	<a id="kick" href="altspace://account.altvr.com/api/spaces/613940881048732244"></a>
 </body>
 </html>
